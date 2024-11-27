@@ -1,18 +1,26 @@
 import pandas as pd 
 import requests
-import csv 
+import csv
+import os
 
 class TiingoCSV:
     def __init__(self, api_key):
         self._api_key = api_key
+        self.dir = 'data'
+
+        # in case this doesn't exist for some reason
+        if not os.path.exists(self.dir):
+            os.makedirs(self.dir)
 
     def get_data(self, symbol, start_date):
         self.headers = {
                 'Content-Type': 'application/json'
                 } 
-        response = requests.get(f"https://api.tiingo.com/tiingo/daily/{symbol.lower()}/prices?startDate={start_date}&token={self._api_key}", headers=self.headers)
-        csv_name = f"{symbol}-{start_date}"
         
+        api = f"https://api.tiingo.com/tiingo/daily/{symbol.lower()}/prices?startDate={start_date}&token={self._api_key}"
+        response = requests.get(api, headers=self.headers).json()
+        csv_name = os.path.join(self.dir, f"{symbol}-{start_date}.csv")
+
         with open(csv_name, 'w', newline='') as csvfile:
             fieldnames = ['date', 'open', 'high', 'low', 'close', 'volume', 'adjOpen', 'adjHigh', 'adjLow',
                           'adjClose', 'adjVolume', 'dividend', 'split']
@@ -21,7 +29,7 @@ class TiingoCSV:
             
             writer.writeheader()
             for r in response:
-                date = r['date']
+                date = r['date'] 
                 openn = r['open']
                 high = r['high']
                 low = r['low']
