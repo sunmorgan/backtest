@@ -19,7 +19,7 @@ class TiingoCSV:
         
         api = f"https://api.tiingo.com/tiingo/daily/{symbol.lower()}/prices?startDate={start_date}&token={self._api_key}"
         response = requests.get(api, headers=self.headers).json()
-        csv_name = os.path.join(self.dir, f"{symbol}-{start_date}.csv")
+        csv_name = os.path.join(self.dir, f"tiingo-{symbol}-{start_date}.csv")
 
         with open(csv_name, 'w', newline='') as csvfile:
             fieldnames = ['date', 'open', 'high', 'low', 'close', 'volume', 'adjOpen', 'adjHigh', 'adjLow',
